@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+gunicorn
+jinja2
+python-multipart
+joblib
+pandas
+shap
+evidently
+scikit-learn
+lightgbm
+dash
+plotly
