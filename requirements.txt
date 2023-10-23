@@ -1,5 +1,5 @@
 aiobotocore==1.4.2
-aiofiles==0.7.3
+aiofiles==23.2.1
 aiohttp==4.3.1
 aioitertools==0.7.1
 aiosignal==1.2.1
