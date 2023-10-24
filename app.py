@@ -40,6 +40,8 @@ def get_features():
 # Création de l'application Dash et utilisation du thème FLATLY de Bootstrap
 app = dash.Dash(external_stylesheets=[dbc.themes.FLATLY])
 
+server = app.server
+
 # Mise en page de l'application
 # Définition de l'en-tête de l'application avec un titre, un sous-titre et un arrière-plan coloré
 header = html.Div(
