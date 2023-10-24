@@ -19,7 +19,7 @@ relevant_features = [
 
 # Récupération des IDs clients depuis l'API
 def get_client_ids():
-    api_url = "http://127.0.0.1:8000/client_ids"
+    api_url = "https://fastapi-scoring-304b8bfde103.herokuapp.com/client_ids"
     response = requests.get(api_url)
 
     if response.status_code == 200:
@@ -29,7 +29,7 @@ def get_client_ids():
 
 # Récupération de la liste des features
 def get_features():
-    api_url = "http://127.0.0.1:8000/features"
+    api_url = "https://fastapi-scoring-304b8bfde103.herokuapp.com/features"
     response = requests.get(api_url)
 
     if response.status_code == 200:
@@ -233,7 +233,7 @@ def display_client_info(client_id):
         return ""
 
     # Appel de l'API pour obtenir les informations du client
-    api_url = f"http://127.0.0.1:8000/client_data/{client_id}"
+    api_url = f"https://fastapi-scoring-304b8bfde103.herokuapp.com/client_data/{client_id}"
     response = requests.get(api_url)
 
     if response.status_code == 200:
@@ -324,7 +324,7 @@ def generate_credit_decision(client_id):
         return ""
 
     # Appel de l'API pour obtenir la décision de crédit
-    api_url = f"http://127.0.0.1:8000/credit/{client_id}"
+    api_url = f"https://fastapi-scoring-304b8bfde103.herokuapp.com/credit/{client_id}"
     response = requests.get(api_url)
 
     if response.status_code == 200:
@@ -386,11 +386,11 @@ def update_nearest_neighbors_plot(n_clicks, selected_client, selected_variable, 
         return go.Figure()
     
     # Appeler l'API pour obtenir les données du client sélectionné
-    client_data_response = requests.get(f"http://127.0.0.1:8000/client_data/{selected_client}")
+    client_data_response = requests.get(f"https://fastapi-scoring-304b8bfde103.herokuapp.com/client_data/{selected_client}")
     client_data = client_data_response.json()
 
     # Appeler l'API pour obtenir les plus proches voisins
-    neighbors_data_response = requests.get(f"http://127.0.0.1:8000/nearest_neighbors/{selected_client}")
+    neighbors_data_response = requests.get(f"https://fastapi-scoring-304b8bfde103.herokuapp.com/nearest_neighbors/{selected_client}")
     neighbors_data = neighbors_data_response.json()
     
     # Extraire les identifiants clients et les valeurs de la variable sélectionnée pour le client sélectionné et ses voisins
@@ -432,11 +432,11 @@ def update_comparison_to_all_clients_plot(n_clicks, selected_client, selected_va
         return go.Figure()
 
     # Appeler l'API pour obtenir les données du client sélectionné
-    client_data_response = requests.get(f"http://127.0.0.1:8000/client_data/{selected_client}")
+    client_data_response = requests.get(f"https://fastapi-scoring-304b8bfde103.herokuapp.com/client_data/{selected_client}")
     client_data = client_data_response.json()
 
     # Appeler l'API pour obtenir l'ensemble des données clients
-    all_clients_data_response = requests.get("http://127.0.0.1:8000/all_clients_data")
+    all_clients_data_response = requests.get("https://fastapi-scoring-304b8bfde103.herokuapp.com/all_clients_data")
     all_clients_data = all_clients_data_response.json()
 
     # Extraire les identifiants clients et les valeurs de la variable sélectionnée pour le client sélectionné et l'ensemble des clients
@@ -479,7 +479,7 @@ def update_shap_waterfall(n_clicks, info_checklist, client_id, variable):
     if 'decision' in info_checklist and n_clicks > 0:
         if client_id is not None and variable is not None:
             # Faites une requête à l'API pour récupérer les valeurs SHAP
-            api_url = f"http://127.0.0.1:8000/shap_values/{client_id}"
+            api_url = f"https://fastapi-scoring-304b8bfde103.herokuapp.com/shap_values/{client_id}"
             response = requests.get(api_url)
 
             if response.status_code == 200:
@@ -530,7 +530,7 @@ def update_shap_waterfall(n_clicks, info_checklist, client_id, variable):
 def update_shap_values_plot(n_clicks, info_checklist):
     if 'importance' in info_checklist and n_clicks > 0:
         # Faites une requête à l'API pour récupérer les valeurs SHAP pour l'ensemble du jeu de données
-        api_url = "http://127.0.0.1:8000/shap"
+        api_url = "https://fastapi-scoring-304b8bfde103.herokuapp.com/shap"
         response = requests.get(api_url)
 
         if response.status_code == 200:
@@ -575,7 +575,7 @@ def update_shap_values_plot(n_clicks, info_checklist):
 
 def update_data_drift_plot(n_clicks, info_checklist):
     if "drift" in info_checklist and n_clicks > 0:
-        api_url = "http://127.0.0.1:8000/data_drift"
+        api_url = "https://fastapi-scoring-304b8bfde103.herokuapp.com/data_drift"
         response = requests.get(api_url)
         if response.status_code == 200:
             data = response.json()
