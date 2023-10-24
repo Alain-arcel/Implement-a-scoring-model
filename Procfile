@@ -1,1 +1,1 @@
-web: gunicorn KENFACK_Alain_3_script_dashboard_092023.py
+web: gunicorn KENFACK_Alain_3_script_dashboard_092023:server
