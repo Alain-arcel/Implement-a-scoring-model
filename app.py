@@ -9,14 +9,6 @@ import plotly.graph_objects as go
 import json
 
 
-
-
-# Liste des variables pertinentes
-relevant_features = [
-    "EXT_SOURCE_2", "EXT_SOURCE_3", "CODE_GENDER", "BURO_AMT_CREDIT_MAX_OVERDUE_MEAN",
-    "AMT_GOODS_PRICE", "INSTAL_DPD_MEAN", "DAYS_EMPLOYED", "INSTAL_AMT_PAYMENT_SUM", "AMT_ANNUITY"
-]
-
 # Récupération des IDs clients depuis l'API
 def get_client_ids():
     api_url = "https://fastapi-scoring-304b8bfde103.herokuapp.com/client_ids"
