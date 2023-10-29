@@ -1,5 +1,5 @@
 import unittest
-from dashboard import app  
+from app import app  
 
 class TestDashApp(unittest.TestCase):
 
