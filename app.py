@@ -6,6 +6,7 @@ import dash_bootstrap_components as dbc
 import requests
 import pandas as pd
 import plotly.graph_objects as go
+import plotly.figure_factory as ff
 import json
 
 
@@ -32,6 +33,8 @@ def get_features():
 
 # Création de l'application Dash et utilisation du thème FLATLY de Bootstrap
 app = dash.Dash(external_stylesheets=[dbc.themes.FLATLY])
+
+server = app.server
 
 # Mise en page de l'application
 # Définition de l'en-tête de l'application avec un titre, un sous-titre et un arrière-plan coloré
@@ -406,11 +409,12 @@ def update_nearest_neighbors_plot(n_clicks, selected_client, selected_variable, 
         title=f"Comparaison de {selected_variable} pour le client {selected_client}",
         xaxis_title="Identifiant client",
         yaxis_title=selected_variable,
+        barmode="group"  # Pour afficher les barres groupées
     )
     
     return fig
 
-import plotly.figure_factory as ff
+
 @app.callback(
     Output("comparison-to-all-clients-plot", "figure"),
     Input("my-button", "n_clicks"),
@@ -454,7 +458,6 @@ def update_comparison_to_all_clients_plot(n_clicks, selected_client, selected_va
     )
 
     return fig
-
 
 
 
