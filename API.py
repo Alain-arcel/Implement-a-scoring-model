@@ -32,6 +32,9 @@ df[columns_with_nan] = imputer.fit_transform(df[columns_with_nan])
 ignore_features = ['Unnamed: 0', 'SK_ID_CURR', 'INDEX', 'TARGET']
 relevant_features = [col for col in df.columns if col not in ignore_features]
 
+# Création de l'explainer shap
+explainer = shap.TreeExplainer(load_clf)
+
 # Création d'une classe Pydantic pour les paramètres d'entrée
 class ClientRequest(BaseModel):
     id_client: int
@@ -93,11 +96,14 @@ async def get_client_data(id_client: int = Path(..., title="Client ID")):
 
     return client_data.to_dict(orient="records")
 
-# Définition de la route pour récupérer les données de l'ensemble des clients
+# Définition de la route pour récupérer les données de 1000 clients choisis de manière aléatoire
 @app.get("/all_clients_data")
 async def get_all_clients_data():
-
-    return df.to_dict(orient="records")
+   
+   # Échantillon aléatoire de 1000 clients
+   random_clients = df.sample(n=1000, random_state=42)
+   
+   return random_clients.to_dict(orient="records")
 
 
 # Définition de la route pour calculer les plus proches voisins du client_id
@@ -132,7 +138,6 @@ async def get_shap_values_by_client(id_client: int = Path(..., title="Client ID"
     client_data = client_data[relevant_features]
 
     # Calcul des valeurs SHAP pour le client
-    explainer = shap.TreeExplainer(load_clf)
     shap_values = explainer.shap_values(client_data)
 
     # Conversion des valeurs SHAP en un objet JSON
@@ -148,18 +153,23 @@ async def get_shap_values_by_client(id_client: int = Path(..., title="Client ID"
 # Définition d'une route pour obtenir les valeurs Shap de l'ensemble des données
 @app.get("/shap")
 async def get_shap_values():
+    # Définir la taille du sous-échantillon
+    subsample_size = 1000
 
-    # Calcul des valeurs SHAP
-    explainer = shap.TreeExplainer(load_clf)
-    shap_values_all = explainer.shap_values(df[relevant_features])
+    # Sélectionner un sous-échantillon aléatoire du jeu de données
+    subsample = df.sample(n=subsample_size, random_state=42)
+
+    # Calculer les valeurs SHAP pour le sous-échantillon
+    shap_values_all = explainer.shap_values(subsample[relevant_features])
 
     # Conversion des valeurs Shap en un objet JSON
     shap_values_json_all = {
-    "features": relevant_features,
-    "values": shap_values_all[0].tolist()
+        "features": relevant_features,
+        "values": shap_values_all[0].tolist()
     }
 
     return shap_values_json_all
+
 
 
 
