@@ -6,6 +6,7 @@ import dash_bootstrap_components as dbc
 import requests
 import pandas as pd
 import plotly.graph_objects as go
+import plotly.figure_factory as ff
 import json
 
 
@@ -435,26 +436,25 @@ def update_comparison_to_all_clients_plot(n_clicks, selected_client, selected_va
     all_clients_data = all_clients_data_response.json()
 
     # Extraire les identifiants clients et les valeurs de la variable sélectionnée pour le client sélectionné et l'ensemble des clients
-    client_id = selected_client
     client_value = client_data[0][selected_variable]
-    all_clients_ids = [data["SK_ID_CURR"] for data in all_clients_data]
     all_clients_values = [data[selected_variable] for data in all_clients_data]
 
-    # Créer un histogramme
-    fig = go.Figure()
+    # Créer un distplot
+    fig = ff.create_distplot(
+        [all_clients_values],
+        group_labels=["Tous les clients"],
+        show_hist=False,
+        show_rug=True
+    )
 
-    # Ajouter l'histogramme du client sélectionné
-    fig.add_trace(go.Bar(x=[client_id], y=[client_value], name="Client sélectionné"))
-
-    # Ajouter l'histogramme de l'ensemble des clients
-    fig.add_trace(go.Bar(x=all_clients_ids, y=all_clients_values, name="Tous les clients"))
+    # Ajouter la valeur du client sélectionné
+    fig.add_trace(go.Scatter(x=[client_value], mode='markers', name="Client sélectionné"))
 
     # Mettre en forme le graphique
     fig.update_layout(
         title=f"Comparaison de {selected_variable} pour le client {selected_client} avec l'ensemble des clients",
-        xaxis_title="Identifiant client",
-        yaxis_title=selected_variable,
-        barmode="group"  # Pour afficher les barres groupées
+        xaxis_title=selected_variable,
+        yaxis_title="Densité",
     )
 
     return fig
