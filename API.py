@@ -154,7 +154,7 @@ async def get_shap_values_by_client(id_client: int = Path(..., title="Client ID"
 @app.get("/shap")
 async def get_shap_values():
     # Définir la taille du sous-échantillon
-    subsample_size = 1000
+    subsample_size = 500
 
     # Sélectionner un sous-échantillon aléatoire du jeu de données
     subsample = df.sample(n=subsample_size, random_state=42)
