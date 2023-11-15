@@ -138,7 +138,7 @@ content = html.Div(
                         dcc.Graph(id='shap-client')
                         ]
                 )],
-                style={'height': '50vh',
+                style={'height': '60vh',
                    'marginTop': '150px', 'marginLeft': '8px',
                    'marginBottom': '8px', 'marginRight': '8px', 'textAlign': 'center'}),
 
@@ -197,7 +197,7 @@ content = html.Div(
                     ]
                 )
             ],
-            style={'height': '50vh',
+            style={'height': '60vh',
                    'marginTop': '200px', 'marginLeft': '8px',
                    'marginBottom': '8px', 'marginRight': '8px', 'textAlign': 'center'}
         )
