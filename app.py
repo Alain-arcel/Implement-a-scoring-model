@@ -33,6 +33,9 @@ def get_features():
 # Création de l'application Dash et utilisation du thème FLATLY de Bootstrap
 app = dash.Dash(external_stylesheets=[dbc.themes.FLATLY])
 
+# Création d'une instance de serveur pour l’application
+server = app.server
+
 # Mise en page de l'application
 # Définition de l'en-tête de l'application avec un titre, un sous-titre et un arrière-plan coloré
 header = html.Div(
@@ -135,7 +138,7 @@ content = html.Div(
                         dcc.Graph(id='shap-client')
                         ]
                 )],
-                style={'height': '50vh',
+                style={'height': '60vh',
                    'marginTop': '150px', 'marginLeft': '8px',
                    'marginBottom': '8px', 'marginRight': '8px', 'textAlign': 'center'}),
 
@@ -194,7 +197,7 @@ content = html.Div(
                     ]
                 )
             ],
-            style={'height': '50vh',
+            style={'height': '60vh',
                    'marginTop': '200px', 'marginLeft': '8px',
                    'marginBottom': '8px', 'marginRight': '8px', 'textAlign': 'center'}
         )
