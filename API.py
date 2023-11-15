@@ -6,8 +6,6 @@ import pandas as pd
 import shap
 from sklearn.neighbors import NearestNeighbors
 from sklearn.impute import SimpleImputer
-from evidently.report import Report
-from evidently.metric_preset import DataDriftPreset
 
 
 # Initialisation d'une instance de l'API
@@ -87,7 +85,6 @@ async def predict_credit(id_client: int = Path(..., title="Client ID")):
     # Retour de la réponse de la prédiction
     return pred_proba
 
-
 # Définition de la route pour récupérer les données d'un client spécifique
 @app.get("/client_data/{id_client}")
 async def get_client_data(id_client: int = Path(..., title="Client ID")):
@@ -104,7 +101,6 @@ async def get_all_clients_data():
    random_clients = df.sample(n=1000, random_state=42)
    
    return random_clients.to_dict(orient="records")
-
 
 # Définition de la route pour calculer les plus proches voisins du client_id
 @app.get("/nearest_neighbors/{id_client}")
@@ -129,7 +125,6 @@ async def get_nearest_neighbors(id_client: int = Path(..., title="Client ID"), n
     
     return nearest_neighbors_df.to_dict(orient="records")
 
-
 # Définition de la route pour récupérer les valeurs SHAP par client
 @app.get("/shap_values/{id_client}")
 async def get_shap_values_by_client(id_client: int = Path(..., title="Client ID")):
@@ -147,8 +142,6 @@ async def get_shap_values_by_client(id_client: int = Path(..., title="Client ID"
     }
 
     return shap_values_json
-
-
 
 # Définition d'une route pour obtenir les valeurs Shap de l'ensemble des données
 @app.get("/shap")
@@ -170,42 +163,16 @@ async def get_shap_values():
 
     return shap_values_json_all
 
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path 
+# Chemin vers le fichier HTML de dérive des données
+data_drift_file_path = Path(r"C:\Users\alain\Documents\Documents\OpenClassrooms\Projets\Projet_7\scoring\data_drift.html")
 
+# Définissez le dossier statique pour les fichiers HTML
+app.mount("/static", StaticFiles(directory=str(data_drift_file_path.parent), html=True), name="static")
 
-
-# Chargement des données anciennes et actuelles
-old_data = pd.read_parquet("application_train.parquet")
-current_data = pd.read_parquet("application_test.parquet")
-
-# Trouver les colonnes communes aux deux jeux de données
-common_columns = list(set(old_data.columns).intersection(current_data.columns))
-
-
-# Filtrer les deux jeux de données pour ne conserver que les colonnes communes
-old_data = old_data[common_columns].sample(frac=0.01, random_state=42)
-current_data = current_data[common_columns].sample(frac=0.01, random_state=42)
-
-
-# Définition de la route pour évaluer le data drift
-@app.get("/data_drift")
-async def evaluate_data_drift():
-    # Assurez-vous que les deux jeux de données ont la même structure
-
-    if set(old_data.columns) != set(current_data.columns):
-        return {"error": "Les jeux de données n'ont pas la même structure."}
-
-    # Sélectionnez les colonnes pertinentes pour l'analyse de data drift
-    relevant_columns = [col for col in old_data.columns if col not in ignore_features]
-
-    # Filtrer les données pour ne conserver que les colonnes pertinentes
-    old_data_filtered = old_data[relevant_columns]
-    current_data_filtered = current_data[relevant_columns]
-
-    rapport = Report(metrics=[
-    DataDriftPreset(),
-    ])
-
-    rapport.run(reference_data=old_data_filtered, current_data=current_data_filtered)
-    
-
-    return rapport.json()
+# Route pour récupérer le fichier de dérive des données
+@app.get("/data_drift_html")
+async def get_data_drift_html():
+    return FileResponse(data_drift_file_path, media_type="text/html")
