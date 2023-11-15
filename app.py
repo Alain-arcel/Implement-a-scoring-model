@@ -6,14 +6,13 @@ import dash_bootstrap_components as dbc
 import requests
 import pandas as pd
 import plotly.graph_objects as go
-import plotly.figure_factory as ff
 import json
 
 
 
 # Récupération des IDs clients depuis l'API
 def get_client_ids():
-    api_url = "https://fastapi-scoring-304b8bfde103.herokuapp.com/client_ids"
+    api_url = "http://127.0.0.1:8000/client_ids"
     response = requests.get(api_url)
 
     if response.status_code == 200:
@@ -23,7 +22,7 @@ def get_client_ids():
 
 # Récupération de la liste des features
 def get_features():
-    api_url = "https://fastapi-scoring-304b8bfde103.herokuapp.com/features"
+    api_url = "http://127.0.0.1:8000/features"
     response = requests.get(api_url)
 
     if response.status_code == 200:
@@ -33,8 +32,6 @@ def get_features():
 
 # Création de l'application Dash et utilisation du thème FLATLY de Bootstrap
 app = dash.Dash(external_stylesheets=[dbc.themes.FLATLY])
-
-server = app.server
 
 # Mise en page de l'application
 # Définition de l'en-tête de l'application avec un titre, un sous-titre et un arrière-plan coloré
@@ -154,7 +151,7 @@ content = html.Div(
                 ),
                 
             ],
-            style={'height': '50vh',
+            style={'height': '60vh',
                    'marginTop': '170px', 'marginLeft': '8px',
                    'marginBottom': '8px', 'marginRight': '8px', 'textAlign': 'center'}
         ),
@@ -178,11 +175,11 @@ content = html.Div(
                     [
                         html.P('Dérive des données',
                                className='bg-info text-white fontWeight-bold', style = {"margin" : "8px"}),
-                        dcc.Graph(id = "data-drift-plot")
+                        html.Div(id="data-drift-plot-container")
                     ]
                 )
             ],
-            style={'height': '50vh',
+            style={'height': '60vh',
                    'marginTop': '200px', 'marginLeft': '8px',
                    'marginBottom': '30px', 'marginRight': '8px', 'textAlign': 'center'}
         ),
@@ -229,7 +226,7 @@ def display_client_info(client_id):
         return ""
 
     # Appel de l'API pour obtenir les informations du client
-    api_url = f"https://fastapi-scoring-304b8bfde103.herokuapp.com/client_data/{client_id}"
+    api_url = f"http://127.0.0.1:8000/client_data/{client_id}"
     response = requests.get(api_url)
 
     if response.status_code == 200:
@@ -320,7 +317,7 @@ def generate_credit_decision(client_id):
         return ""
 
     # Appel de l'API pour obtenir la décision de crédit
-    api_url = f"https://fastapi-scoring-304b8bfde103.herokuapp.com/credit/{client_id}"
+    api_url = f"http://127.0.0.1:8000/credit/{client_id}"
     response = requests.get(api_url)
 
     if response.status_code == 200:
@@ -382,11 +379,11 @@ def update_nearest_neighbors_plot(n_clicks, selected_client, selected_variable, 
         return go.Figure()
     
     # Appeler l'API pour obtenir les données du client sélectionné
-    client_data_response = requests.get(f"https://fastapi-scoring-304b8bfde103.herokuapp.com/client_data/{selected_client}")
+    client_data_response = requests.get(f"http://127.0.0.1:8000/client_data/{selected_client}")
     client_data = client_data_response.json()
 
     # Appeler l'API pour obtenir les plus proches voisins
-    neighbors_data_response = requests.get(f"https://fastapi-scoring-304b8bfde103.herokuapp.com/nearest_neighbors/{selected_client}")
+    neighbors_data_response = requests.get(f"http://127.0.0.1:8000/nearest_neighbors/{selected_client}")
     neighbors_data = neighbors_data_response.json()
     
     # Extraire les identifiants clients et les valeurs de la variable sélectionnée pour le client sélectionné et ses voisins
@@ -409,12 +406,11 @@ def update_nearest_neighbors_plot(n_clicks, selected_client, selected_variable, 
         title=f"Comparaison de {selected_variable} pour le client {selected_client}",
         xaxis_title="Identifiant client",
         yaxis_title=selected_variable,
-        barmode="group"  # Pour afficher les barres groupées
     )
     
     return fig
 
-
+import plotly.figure_factory as ff
 @app.callback(
     Output("comparison-to-all-clients-plot", "figure"),
     Input("my-button", "n_clicks"),
@@ -428,11 +424,11 @@ def update_comparison_to_all_clients_plot(n_clicks, selected_client, selected_va
         return go.Figure()
 
     # Appeler l'API pour obtenir les données du client sélectionné
-    client_data_response = requests.get(f"https://fastapi-scoring-304b8bfde103.herokuapp.com/client_data/{selected_client}")
+    client_data_response = requests.get(f"http://127.0.0.1:8000/client_data/{selected_client}")
     client_data = client_data_response.json()
 
     # Appeler l'API pour obtenir l'ensemble des données clients
-    all_clients_data_response = requests.get("https://fastapi-scoring-304b8bfde103.herokuapp.com/all_clients_data")
+    all_clients_data_response = requests.get("http://127.0.0.1:8000/all_clients_data")
     all_clients_data = all_clients_data_response.json()
 
     # Extraire les identifiants clients et les valeurs de la variable sélectionnée pour le client sélectionné et l'ensemble des clients
@@ -461,6 +457,7 @@ def update_comparison_to_all_clients_plot(n_clicks, selected_client, selected_va
 
 
 
+
 # Ajoutez ce callback pour afficher le graphique des valeurs SHAP par client
 
 @app.callback(
@@ -474,7 +471,7 @@ def update_shap_waterfall(n_clicks, info_checklist, client_id, variable):
     if 'decision' in info_checklist and n_clicks > 0:
         if client_id is not None and variable is not None:
             # Faites une requête à l'API pour récupérer les valeurs SHAP
-            api_url = f"https://fastapi-scoring-304b8bfde103.herokuapp.com/shap_values/{client_id}"
+            api_url = f"http://127.0.0.1:8000/shap_values/{client_id}"
             response = requests.get(api_url)
 
             if response.status_code == 200:
@@ -525,7 +522,7 @@ def update_shap_waterfall(n_clicks, info_checklist, client_id, variable):
 def update_shap_values_plot(n_clicks, info_checklist):
     if 'importance' in info_checklist and n_clicks > 0:
         # Faites une requête à l'API pour récupérer les valeurs SHAP pour l'ensemble du jeu de données
-        api_url = "https://fastapi-scoring-304b8bfde103.herokuapp.com/shap"
+        api_url = "http://127.0.0.1:8000/shap"
         response = requests.get(api_url)
 
         if response.status_code == 200:
@@ -563,82 +560,27 @@ def update_shap_values_plot(n_clicks, info_checklist):
 
     return go.Figure()
 
-# Fonction pour analyser le data drift
-@app.callback(Output('data-drift-plot', 'figure'),
-              Input('my-button', 'n_clicks'),
-              Input('info-checklist', 'value'))
-
+# Callback pour afficher le graphique de dérive des données
+@app.callback(
+    Output('data-drift-plot-container', 'children'),
+    Input('my-button', 'n_clicks'),
+    Input('info-checklist', 'value')
+)
 def update_data_drift_plot(n_clicks, info_checklist):
-    if "drift" in info_checklist and n_clicks > 0:
-        api_url = "https://fastapi-scoring-304b8bfde103.herokuapp.com/data_drift"
+    if 'drift' in info_checklist and n_clicks > 0:
+        # Faites une requête à l'API FastAPI pour obtenir les données de dérive des données
+        api_url = "http://127.0.0.1:8000/data_drift_html"
         response = requests.get(api_url)
+
         if response.status_code == 200:
-            data = response.json()
+            drift_html_content = response.text
 
-            # Conversion des données en un dictionnaire Python
-            data_dict = json.loads(data)
+            # Intégrez le contenu HTML dans la page Dash
+            drift_plot = html.Div([html.Iframe(srcDoc=drift_html_content, width='100%', height='600')])
 
-            # Extraction des informations pertinentes
-            drift_data = data_dict["metrics"][1]["result"]["drift_by_columns"]
+            return drift_plot
 
-            # Création des listes pour stocker ces informations 
-            column_names = []
-            column_types = []
-            drift_scores = []
-            drift_detected = []
-            stattest_names = []
-
-            # Extraction des informations pour les ajouter dans les listes
-            for column, info in drift_data.items():
-                column_names.append(column)
-                column_types.append(info["column_type"])
-                drift_scores.append(info["drift_score"])
-                drift_detected.append(info["drift_detected"])
-                stattest_names.append(info["stattest_name"])
-
-            # Création d'un dataframe pour stocker les informations
-            df = pd.DataFrame({
-                "column_name": column_names,
-                "column_type": column_types,
-                "drift_score": drift_scores,
-                "drift_detected": drift_detected,
-                "stattest_name": stattest_names})
-            
-            # Arrondir les valeurs des colonnes "drift_score" à 2 décimales
-            df["drift_score"] = df["drift_score"].round(2)
-
-            # Création d'un tableau de données drift
-            # Condition basée sur dataset_drift
-            dataset_drift = False  
-            if dataset_drift:
-                drift_status_text = "Attention : il y a dérive dans les données"
-            else:
-                drift_status_text = "Pas de data drift dans les données"
-            
-            fig = go.Figure(data=[go.Table(
-                header=dict(
-                    values=["<b>column_name</b>", "<b>column_type</b>", "<b>drift_score</b>", "<b>drift_detected</b>", "<b>stattest_name</b>"],
-                    line_color='white', fill_color="#ef4155",
-                    align='center', font=dict(color='white', size=12)),
-                    cells=dict(
-                        values=[df.column_name, df.column_type, df.drift_score, df.drift_detected, df.stattest_name],
-                        line_color= "white", fill_color=[["white","rgb(189, 215, 231)","white", "rgb(189, 215, 231)","white"]*360],
-                        align='center', font=dict(color='black', size=10),height=30))
-                    ])
-
-            # Ajouter un texte au-dessus du tableau
-            fig.add_annotation(
-                text=drift_status_text,
-                x=0,
-                y=1.1,
-                showarrow=False,
-                font=dict(size=12, color="blue")
-                )
-            fig.update_layout(width = 1300)
-
-            return fig
-        
-    return go.Figure()
+    return html.Div()
 
 
 
