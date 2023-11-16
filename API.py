@@ -167,7 +167,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path 
 # Chemin vers le fichier HTML de dérive des données
-data_drift_file_path = Path(r"C:\Users\alain\Documents\Documents\OpenClassrooms\Projets\Projet_7\scoring\data_drift.html")
+data_drift_file_path = Path("./data_drift.html")
 
 # Définissez le dossier statique pour les fichiers HTML
 app.mount("/static", StaticFiles(directory=str(data_drift_file_path.parent), html=True), name="static")
